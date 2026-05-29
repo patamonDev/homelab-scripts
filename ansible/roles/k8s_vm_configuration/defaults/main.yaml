@@ -1,0 +1,3 @@
+---
+cni_version: "1.9.1"
+k8s_version: "1.36"

@@ -1,0 +1,9 @@
+---
+- name: Setup Kubernetes Nodes
+  hosts: worker_nodes
+  gather_facts: false
+  become: true
+  vars_files:
+    - node_vault.yaml
+  roles:
+    - k8s_vm_configuration

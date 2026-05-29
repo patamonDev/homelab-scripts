@@ -1,0 +1,16 @@
+---
+main_packages:
+  - make
+  - gcc
+  - linux-libc-dev
+  - libseccomp-dev
+  - pkg-config
+  - git
+  - build-essential
+  - golang-go
+  - containerd
+
+kube_packages:
+  - kubeadm
+  - kubelet
+  - kubectl

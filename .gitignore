@@ -1,0 +1,52 @@
+# Sensitive files
+*.vault
+vault.yml
+vault.yaml
+*vault*
+group_vars/*/vault*
+host_vars/*/vault*
+.vault_pass
+.vault_password
+*.secret
+
+# Retry files
+*.retry
+
+# Inventory files (if dynamic or local)
+inventory/local
+inventory/*
+ansible/inventory/*
+*.local.ini
+*.local.yml
+
+# Roles installed via ansible-galaxy
+roles/vendor/
+# or if you use a requirements install path:
+roles/external/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Terraform (if mixed infra repo)
+*.tfstate
+*.tfstate.backup
+.terraform/
