@@ -1,0 +1,9 @@
+---
+- name: Install Calico CNI and Kubernets Metrics
+  hosts: control_nodes
+  gather_facts: false
+  become: true
+  vars_files:
+    - node_vault.yaml
+  roles:
+    - k8s_cni_metrics_installation

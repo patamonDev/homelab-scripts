@@ -1,6 +1,6 @@
 ---
 - name: Setup Kubernetes Nodes
-  hosts: worker_nodes
+  hosts: all
   gather_facts: false
   become: true
   vars_files:

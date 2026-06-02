@@ -52,26 +52,42 @@
   ansible.builtin.command: containerd config default
   register: containerd_config
   changed_when: false
+  tags:
+    - containerd
+
+- name: Create containerd config file
+  ansible.builtin.file:
+    path: /etc/containerd/config.toml
+    mode: '0644'
+    state: touch
+  tags:
+    - containerd
 
 - name: Copy containerd_config content into containerd config file
-  ansible.builtin.copy:
-    src: "{{ containerd_config.stdout }}"
-    dest: /etc/containerd/config.toml
+  ansible.builtin.blockinfile:
+    path: /etc/containerd/config.toml
+    block: |
+      "{{ containerd_config.stdout }}"   
     mode: '0644'
   notify: Restart containerd
+  tags:
+    - containerd
 
 - name: Find and replace SystemCgroup line
   ansible.builtin.lineinfile:
     path: /etc/containerd/config.toml
     regexp: 'SystemCgroup = false'
     line: SystemCgroup = true
-  notify: Restart containerd
+  tags:
+    - containerd
 
 - name: Start containerd.service
   ansible.builtin.systemd:
     name: containerd
     state: started
     enabled: true
+  tags:
+    - containerd
 
 - name: Create keyrings directory
   ansible.builtin.file:
@@ -87,17 +103,23 @@
     dest: /tmp/kubernetes-release.key
     mode: '0644'
     force: true
+  tags:
+    - kubernetes_install
 
 - name: Dearmor and install Kubernetes GPG key
   ansible.builtin.command:
     cmd: gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg /tmp/kubernetes-release.key
     creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  tags:
+    - kubernetes_install
 
 - name: Add Kubernetes APT repository
   ansible.builtin.apt_repository:
     repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v{{ k8s_version }}/deb/ /"
     filename: kubernetes
     state: present
+  tags:
+    - kubernetes_install
 
 - name: Install K8's Packages
   ansible.builtin.apt:
@@ -105,15 +127,21 @@
     state: present
     update_cache: true
   loop: "{{ kube_packages }}"
+  tags:
+    - kubernetes_install
 
 - name: Hold Kubernetes packages to prevent auto-upgrade
   ansible.builtin.dpkg_selections:
     name: "{{ item }}"
     selection: hold
   loop: "{{ kube_packages }}"
+  tags:
+    - kubernetes_install
 
 - name: Enable and start kubelet
   ansible.builtin.systemd:
     name: kubelet
     state: started
     enabled: true
+  tags:
+    - kubernetes_install

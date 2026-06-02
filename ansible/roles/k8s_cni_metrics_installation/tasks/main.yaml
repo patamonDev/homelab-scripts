@@ -1,0 +1,26 @@
+---
+- name: Download Calico manifests
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "/tmp/{{ item.file }}"
+    mode: '0755'
+    force: true
+  loop:
+    - url: "https://raw.githubusercontent.com/projectcalico/calico/v{{ calico_version }}/manifests/operator-crds.yaml"
+      file: operator-crds.yaml
+    - url: "https://raw.githubusercontent.com/projectcalico/calico/v{{ calico_version }}/manifests/tigera-operator.yaml"
+      file: tigera-operator.yaml
+    - url: "https://raw.githubusercontent.com/projectcalico/calico/v{{ calico_version }}/manifests/custom-resources.yaml"
+      file: custom-resources.yaml
+    - url: "https://raw.githubusercontent.com/techiescamp/cka-certification-guide/refs/heads/main/lab-setup/manifests/metrics-server/metrics-server.yaml"
+      file: metrics-server.yaml
+
+# This task assumes you're using the default IP CIDR of Calico which is 192.168.0.0/16
+# If not, edit inline with the CIDR block you are using for your pods
+- name: Apply manifests
+  ansible.builtin.command: "kubectl {{ item.cmd }} -f /tmp/{{ item.file }}"
+  loop:
+    - { file: operator-crds.yaml,    cmd: create }
+    - { file: tigera-operator.yaml,  cmd: create }
+    - { file: custom-resources.yaml, cmd: create }
+    - { file: metrics-server.yaml,   cmd: apply  }
